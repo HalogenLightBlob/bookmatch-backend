@@ -1,7 +1,5 @@
-import numpy as np
 import pandas as pd
-
-import random
+import numpy as np
 
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
@@ -12,13 +10,8 @@ NUM_QUESTIONS = 10
 
 
 def random_suggestion(df, prob_list):
-    clusters = np.arange(NUM_CLUSTER)
-    chosen_cluster = np.random.choice(clusters, p=np.asarray(prob_list) / sum(prob_list))
-
-    possible_choices = df.loc[df["cluster"] == chosen_cluster]
-    recom_book = random.randint(0, len(possible_choices))
-
-    return possible_choices.iloc[recom_book] #returns all info of the book in pd format
+    cluster = np.random.choice(range(NUM_CLUSTER), p=np.asarray(prob_list) / sum(prob_list))
+    return df[df["cluster"] == cluster].sample(1).iloc[0] #returns all info of the book in pd format
 
 
 def get_rec_tfidf(df, book, cluster):

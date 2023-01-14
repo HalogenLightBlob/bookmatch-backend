@@ -1,15 +1,18 @@
 from algorithm import get_all_suggestions, final_recs_based_on_answers
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 import pandas as pd
+import numpy as np
 
 from functools import cache
 from json import loads
 
 app = Flask(__name__)
+CORS(app)
 
 with open("books_clustered.csv", newline='') as f:
-    db = pd.read_csv(f).dropna(subset=["categories", "description", "thumbnail", "average_rating"]).fillna(0)
+    db = pd.read_csv(f).dropna(subset=["categories", "description", "thumbnail", "average_rating"]).fillna("")
 
 db['metadata'] = db.apply(lambda x: (''.join(x['authors']) + ' ' + ''.join(x['categories'])).lower(), axis=1)
 
@@ -51,6 +54,12 @@ def find_matching(query: bytes):
 @app.route("/search", methods=["POST"])
 def search():
     return jsonify(find_matching(request.get_data()))
+
+
+@app.route("/random", methods=["GET"])
+def random():
+    """send 100 random books"""
+    return jsonify(get_all_suggestions(db, np.ones(10), 100).to_dict("records"))
 
 
 @app.route("/suggest", methods=["POST"])
