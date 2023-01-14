@@ -56,6 +56,17 @@ def search():
     return jsonify(find_matching(request.get_data()))
 
 
+@app.route("/save_book", methods=["POST"])
+def save_book():
+    """update user who has liked a random book"""
+    data = loads(request.get_data())
+
+    new_user = data["user"]
+    new_user[data["book"]["cluster"]] += 1
+
+    return jsonify(new_user)
+
+
 @app.route("/random", methods=["GET"])
 def random():
     """send 100 random books"""
